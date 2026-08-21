@@ -5,16 +5,12 @@ import os
 import threading
 from flask import Flask
 
-# Servidor web pequeño para que Render no lo duerma
 app = Flask(__name__)
+
 @app.route('/')
-def keep_alive():
-    return "Bot activo 24/7"
+def home():
+    return "¡El bot multired de Ady está activo y despierto 24/7!"
 
-def run_flask():
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
-
-# --- Resto del código de tu bot ---
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
 def enviar_discord(mensaje):
@@ -34,13 +30,9 @@ def revisar_feed(url_feed, ultimo_id_guardado, red_social):
         return id_actual
     except: return ultimo_id_guardado
 
-if __name__ == "__main__":
-    # Inicia el servidor web en un hilo separado
-    threading.Thread(target=run_flask).start()
-    
+def iniciar_bot():
     print("Iniciando bot de notificaciones multired...")
     ultimo_yt, ultimo_tt, ultimo_x = "", "", ""
-    
     while True:
         try:
             ultimo_yt = revisar_feed("https://www.youtube.com/feeds/videos.xml?channel_id=UC-sZ8x9c15N2_a5j1A0p-iA", ultimo_yt, "YouTube")
@@ -48,3 +40,11 @@ if __name__ == "__main__":
             ultimo_x = revisar_feed("https://politepaul.com/fd/3ekMWtb8e4k3.xml", ultimo_x, "X")
         except: pass
         time.sleep(1800)
+
+if __name__ == "__main__":
+    # Arranca el bucle del bot en segundo plano
+    threading.Thread(target=iniciar_bot).start()
+    
+    # Arranca Flask en el puerto oficial que exige Render
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
