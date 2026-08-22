@@ -49,4 +49,4 @@ if __name__ == "__main__":
             ultimo_tt = revisar_feed("https://rss.app/feeds/sMTEilPe2oXKtO8W.xml", ultimo_tt, "TikTok")
             ultimo_x = revisar_feed("https://politepaul.com/fd/3ekMWtb8e4k3.xml", ultimo_x, "X")
         except: pass
-        time.sleep(1800)
+        time.sleep(259200)
