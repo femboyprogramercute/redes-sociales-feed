@@ -22,7 +22,9 @@ WEBHOOK_CANAL_2 = os.getenv("WEBHOOK_CANAL_2")
 
 def enviar_discord(webhook_url, mensaje):
     if not webhook_url: return
-    requests.post(webhook_url, json={"content": f"@here {mensaje}"})
+    # Tu ID exacto de Discord integrado para que te mencione en azul
+    mi_id_discord = "1502722337282199552"
+    requests.post(webhook_url, json={"content": f"<@{mi_id_discord}> {mensaje}"})
 
 def revisar_feed(url_feed, ultimo_id_guardado, red_social, webhook_destino):
     try:
@@ -49,7 +51,7 @@ if __name__ == "__main__":
     ultimo_tt_1 = ""
     ultimo_tt_2 = ""
     
-    # ¡IMPORTANTE! Reemplaza las URLs de los feeds de TikTok si son distintos para cada canal
+    # URLs de los feeds de TikTok
     url_feed_1 = "https://rss.app/feeds/sMTEilPe2oXKtO8W.xml" # Feed del canal 1
     url_feed_2 = "https://rss.app/feeds/sMTEilPe2oXKtO8W.xml" # Feed del canal 2 (cambia si es otro)
     
@@ -63,5 +65,5 @@ if __name__ == "__main__":
         except: 
             pass
         
-        # Tiempo de espera (ej. 10 minutos = 600 segundos)
+        # Tiempo de espera (10 minutos = 600 segundos)
         time.sleep(600)
