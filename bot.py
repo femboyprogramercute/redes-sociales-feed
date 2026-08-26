@@ -40,13 +40,13 @@ def enviar_discord(webhook_url, red_social, link):
     except Exception as e:
         print(f"❌ Excepción al conectar con Discord: {e}")
 
-def revisar_feed(url_feed, ultimo_id_guardado, red_social, webhook_destino):
+def revisar_feed_unico(url_feed, ultimo_id_guardado):
     try:
-        print(f"🔍 Revisando feed de {red_social}...")
+        print("🔍 Revisando feed de TikTok...")
         feed = feedparser.parse(url_feed)
         
         if not feed.entries:
-            print(f"⚠️ El feed de {red_social} no devolvió ninguna entrada.")
+            print("⚠️ El feed no devolvió ninguna entrada.")
             return ultimo_id_guardado
             
         primera_entrada = feed.entries[0]
@@ -55,20 +55,21 @@ def revisar_feed(url_feed, ultimo_id_guardado, red_social, webhook_destino):
         
         # Si es la primera vez que corre, inicializamos sin spamear
         if ultimo_id_guardado == "":
-            print(f"📌 Inicializado {red_social}. Último ID registrado: {id_actual}")
+            print(f"📌 Inicializado. Último ID registrado: {id_actual}")
             return id_actual
             
         # Si hay un ID nuevo diferente al guardado
         if id_actual != ultimo_id_guardado:
-            print(f"🎉 ¡Nuevo video detectado en {red_social}! Enviando a Discord...")
-            enviar_discord(webhook_destino, red_social, link)
+            print("🎉 ¡Nuevo video detectado! Enviando a ambos servidores...")
+            enviar_discord(WEBHOOK_CANAL_1, "TikTok", link)
+            enviar_discord(WEBHOOK_CANAL_2, "TikTok", link)
             return id_actual
         else:
-            print(f"💤 No hay nuevos videos en {red_social}.")
+            print("💤 No hay nuevos videos.")
             
         return ultimo_id_guardado
     except Exception as e:
-        print(f"❌ Error al procesar el feed de {red_social}: {e}")
+        print(f"❌ Error al procesar el feed: {e}")
         return ultimo_id_guardado
 
 if __name__ == "__main__":
@@ -77,16 +78,12 @@ if __name__ == "__main__":
     
     print("🚀 Iniciando bot multicanal de TikTok...")
     
-    ultimo_tt_1 = ""
-    ultimo_tt_2 = ""
-    
-    url_feed_1 = "https://rss.app/feeds/sMTEilPe2oXKtO8W.xml"
-    url_feed_2 = "https://rss.app/feeds/sMTEilPe2oXKtO8W.xml"
+    ultimo_tt = ""
+    url_feed = "https://rss.app/feeds/sMTEilPe2oXKtO8W.xml"
     
     while True:
         try:
-            ultimo_tt_1 = revisar_feed(url_feed_1, ultimo_tt_1, "TikTok Canal 1", WEBHOOK_CANAL_1)
-            ultimo_tt_2 = revisar_feed(url_feed_2, ultimo_tt_2, "TikTok Canal 2", WEBHOOK_CANAL_2)
+            ultimo_tt = revisar_feed_unico(url_feed, ultimo_tt)
         except Exception as e:
             print(f"❌ Error en el bucle principal: {e}")
         
