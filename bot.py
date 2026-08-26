@@ -20,13 +20,16 @@ def run_flask():
 WEBHOOK_CANAL_1 = os.getenv("WEBHOOK_CANAL_1")
 WEBHOOK_CANAL_2 = os.getenv("WEBHOOK_CANAL_2")
 
-def enviar_discord(webhook_url, mensaje):
+def enviar_discord(webhook_url, red_social, link):
     if not webhook_url:
         print("❌ Error: La URL del webhook de Discord está vacía o no está configurada.")
         return
     
     mi_id_discord = "1502722337282199552"
-    payload = {"content": f"<@{mi_id_discord}> {mensaje}"}
+    
+    # Estructura limpia para que Discord fuerce el reproductor de video (embed)
+    contenido = f"<@{mi_id_discord}> ¡Nuevo video en **{red_social}**! 🎉\n{link}"
+    payload = {"content": contenido}
     
     try:
         response = requests.post(webhook_url, json=payload)
@@ -48,7 +51,6 @@ def revisar_feed(url_feed, ultimo_id_guardado, red_social, webhook_destino):
             
         primera_entrada = feed.entries[0]
         id_actual = primera_entrada.get('id') or primera_entrada.get('link')
-        titulo = primera_entrada.get('title', 'Nueva publicación')
         link = primera_entrada.get('link', '')
         
         # Si es la primera vez que corre, inicializamos sin spamear
@@ -59,7 +61,7 @@ def revisar_feed(url_feed, ultimo_id_guardado, red_social, webhook_destino):
         # Si hay un ID nuevo diferente al guardado
         if id_actual != ultimo_id_guardado:
             print(f"🎉 ¡Nuevo video detectado en {red_social}! Enviando a Discord...")
-            enviar_discord(webhook_destino, f"¡Nuevo video en **{red_social}**! 🎉\n**{titulo}**\n{link}")
+            enviar_discord(webhook_destino, red_social, link)
             return id_actual
         else:
             print(f"💤 No hay nuevos videos en {red_social}.")
@@ -73,7 +75,7 @@ if __name__ == "__main__":
     # Arrancamos el servidor web en segundo plano
     threading.Thread(target=run_flask).start()
     
-    print("🚀 Inciando bot multicanal de TikTok...")
+    print("🚀 Iniciando bot multicanal de TikTok...")
     
     ultimo_tt_1 = ""
     ultimo_tt_2 = ""
